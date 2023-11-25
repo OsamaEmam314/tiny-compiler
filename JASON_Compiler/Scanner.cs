@@ -38,16 +38,16 @@ namespace tinyCompiler
         public Scanner()
         {
             ReservedWords.Add("IF", Token_Class.If);
-            ReservedWords.Add("Main", Token_Class.Main);
+            ReservedWords.Add("MAIN", Token_Class.Main);
             ReservedWords.Add("THEN", Token_Class.then);
             ReservedWords.Add("UNTIL", Token_Class.until);
             ReservedWords.Add("WRITE", Token_Class.write);
-            ReservedWords.Add("elseif", Token_Class.elseif);
-            ReservedWords.Add("else", Token_Class.Else);
-            ReservedWords.Add("read", Token_Class.read);
-            ReservedWords.Add("repeat", Token_Class.repeat);
-            ReservedWords.Add("return", Token_Class.Return);
-            ReservedWords.Add("endl", Token_Class.endl);
+            ReservedWords.Add("ELSEIF", Token_Class.elseif);
+            ReservedWords.Add("ELSE", Token_Class.Else);
+            ReservedWords.Add("READ", Token_Class.read);
+            ReservedWords.Add("REPEAT", Token_Class.repeat);
+            ReservedWords.Add("RETURN", Token_Class.Return);
+            ReservedWords.Add("ENDL", Token_Class.endl);
 
 
             Operators.Add(".", Token_Class.Dot);
@@ -58,7 +58,7 @@ namespace tinyCompiler
             Operators.Add("=", Token_Class.EqualOp);
             Operators.Add("<", Token_Class.LessThanOp);
             Operators.Add(">", Token_Class.GreaterThanOp);
-            Operators.Add("!", Token_Class.NotEqualOp);
+            Operators.Add("<>", Token_Class.NotEqualOp);
             Operators.Add("+", Token_Class.PlusOp);
             Operators.Add("–", Token_Class.MinusOp);
             Operators.Add("-", Token_Class.MinusOp);
@@ -69,9 +69,9 @@ namespace tinyCompiler
             Operators.Add("{", Token_Class.Lcurly);
             Operators.Add("&&", Token_Class.andOP);
             Operators.Add("||", Token_Class.orOP);
-            DataTypes.Add("int",Token_Class.Int);
-            DataTypes.Add("float",Token_Class.Float);
-            DataTypes.Add("string",Token_Class.String);
+            DataTypes.Add("INT", Token_Class.Int);
+            DataTypes.Add("FLOAT",Token_Class.Float);
+            DataTypes.Add("STRING", Token_Class.String);
 
         }
 
@@ -86,6 +86,20 @@ namespace tinyCompiler
 
                 if (CurrentChar == ' ' || CurrentChar == '\r' || CurrentChar == '\n')
                     continue;
+                if (CurrentChar == ':' || CurrentChar == '&' || CurrentChar == '|' || CurrentChar == '<')
+                {
+
+                    switch (SourceCode[j + 1])
+                    {
+                        case '=': FindTokenClass(":="); i = j + 2; continue;
+                        case '&': FindTokenClass("&&"); i = j + 2; continue;
+                        case '|': FindTokenClass("||"); i = j + 2; continue;
+                        case '>': FindTokenClass("<>"); i = j + 2; continue;
+
+                    }
+
+
+                }
                 if (CurrentChar == '/' && SourceCode[j + 1] == '*')
                 {
                     while (true)
@@ -116,20 +130,44 @@ namespace tinyCompiler
                     FindTokenClass(":=");
 
                 }
-                else if (CurrentChar == ':' ||CurrentChar=='&'|| CurrentChar == '|')
+/*                else if (CurrentChar == ':' ||CurrentChar=='&'|| CurrentChar == '|'*//* || CurrentChar == '<'*//*)
                 {
                     
                     switch (SourceCode[j+1]) 
                     {
-                        case '=': FindTokenClass(":="); break;
-                        case '&': FindTokenClass("&&"); break;
-                        case '|': FindTokenClass("||"); break;
-                        
+                        case '=':
+                            {
+                                FindTokenClass(":=");
+                                i = j + 2;
+                                break;
+                               
+                            }
+                        case '&':
+                            {
+                                FindTokenClass("&&");
+                                i = j + 2;
+                                break;
+                            }
+                         
+                        case '|':
+                            { 
+                                FindTokenClass("||"); 
+                                i = j + 2;
+                                break;
+                            }
+                          
+                      *//*  case '>':
+                            { FindTokenClass("<>");
+                                i = j + 2;
+                                break;
+                            }*//*
+
+
                     }
 
-                    i = j + 2;
+                   
                 }
-
+*/
                 else if ((CurrentChar >= 'A' && CurrentChar <= 'z')) //if you read a character
                 {
                     j++;
@@ -198,15 +236,15 @@ namespace tinyCompiler
             Token Tok = new Token();
             Tok.lex = Lex;
             //Is it a reserved word?
-
-            if (ReservedWords.ContainsKey(Lex))
+            string temp = Lex.ToUpper();
+            if (ReservedWords.ContainsKey(temp))
             {
-                Tok.token_type = ReservedWords[Lex];
+                Tok.token_type = ReservedWords[temp];
                
             }
-            else if (DataTypes.ContainsKey(Lex))
+            else if (DataTypes.ContainsKey(temp))
             {
-                Tok.token_type = DataTypes[Lex];
+                Tok.token_type = DataTypes[temp];
             }
             //Is it an identifier?
 
